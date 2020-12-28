@@ -15,11 +15,12 @@ app.get("/audio", (req, res) => {
     if (!range) {
         res.status(400).send("Requires Range header")
     }
+    let parts= range.replace(/bytes=/, "").split("-")
+
     const audioPath = "test.mp3"
     const audioSize = fs.statSync(audioPath).size
-    const CHUNK_SIZE = 10 ** 4
-    const start = Number(range.replace(/\D/g, ""))
-    const end = Math.min(start + CHUNK_SIZE, audioSize - 1)
+    const start = parseInt(parts[0],10)
+    const end = parts[1]? parseInt(parts[1],10): audioSize-1
     const contentLength = end - start + 1
 
     const headers = {
