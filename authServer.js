@@ -14,8 +14,7 @@ app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
 
 
-const audioRoute = require("./routes/audioRoute")
-const userRoutes = require("./routes/userRoutes")
+const authRoutes = require("./routes/authRoutes")
 
 const log = fs.createWriteStream(
     path.join(__dirname, "logs", "express.log"), {flag: "a"}
@@ -33,17 +32,8 @@ mongoose.connect(`${process.env.MONGODB_URL}`, {useNewUrlParser: true, useUnifie
 })
 mongoose.set("useCreateIndex", true)
 
-app.get("/", (req, res) => {
-    res.sendFile(__dirname + "/index.html")
-})
+app.use("/auth", authRoutes)
 
-app.use("/audio", audioRoute)
-app.use("/users", userRoutes)
-
-// app.get("/login",(req,res)=>{
-//
-// })
-
-app.listen(8000, () => {
-    console.log("Listen on port 8000")
+app.listen(4000, () => {
+    console.log("Listen on port 4000")
 })
