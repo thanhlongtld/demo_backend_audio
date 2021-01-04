@@ -6,12 +6,17 @@ const morganBody = require("morgan-body")
 const bodyParser = require("body-parser")
 const path = require("path")
 const mongoose = require("mongoose")
+const cookieParser= require("cookie-parser")
 require("dotenv/config")
 
 
-app.use(cors())
+app.use(cors({
+    origin: "http://localhost:3000",
+    credentials: true
+}))
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
+app.use(cookieParser())
 
 
 const audioRoute = require("./routes/audioRoute")

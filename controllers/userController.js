@@ -37,7 +37,7 @@ const createUser = async (req, res) => {
 
 
 const testToken = (req, res) => {
-    res.send(req.user)
+    res.json({newAccessToken:req.newAccessToken})
 }
 
 module.exports = {

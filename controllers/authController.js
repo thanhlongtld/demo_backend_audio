@@ -16,10 +16,11 @@ const login = async (req, res) => {
             const refreshToken = jwt.sign({
                 username: user.username,
                 _id: user._id
-            }, process.env.REFRESH_TOKEN_SECRET, {expiresIn: "2 days"})
-            res.json({
-                accessToken: accessToken,
-                refreshToken: refreshToken
+            }, process.env.REFRESH_TOKEN_SECRET, {expiresIn: '60s'})
+            res.status(202).cookie("refreshToken", refreshToken, {
+                httpOnly: true
+            }).json({
+                accessToken: accessToken
             })
         } else {
             res.send("Wrong Password")
@@ -31,22 +32,29 @@ const login = async (req, res) => {
 }
 
 const generateAccessToken = (user) => {
-    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: "15s"})
+    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: "5s"})
 }
 
 const token = (req, res) => {
     const refreshToken = req.body.refreshToken
     if (!refreshToken) return res.status(401)
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
-        if (err) return res.status(403)
+        if (err){
+            return res.status(403).send("Cannot Refresh")
+        }
         const accessToken = generateAccessToken({
             username: user.username,
             _id: user._id
         })
-        res.json(accessToken)
+        res.json({token: accessToken})
     })
+}
+
+const logout = (req,res)=>{
+    res.status(200).clearCookie("refreshToken").send("clear")
 }
 module.exports = {
     login,
-    token
+    token,
+    logout
 }
