@@ -3,7 +3,14 @@ const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 
 const login = async (req, res) => {
-    const user = await User.findOne({username: req.body.username})
+    let user=undefined;
+    try{
+      user  = await User.findOne({username: req.body.username})
+    }
+    catch (err){
+        return res.status(500).send()
+    }
+
     if (!user) {
         return res.status(400).send("Invalid username")
     }
@@ -16,7 +23,7 @@ const login = async (req, res) => {
             const refreshToken = jwt.sign({
                 username: user.username,
                 _id: user._id
-            }, process.env.REFRESH_TOKEN_SECRET, {expiresIn: '60s'})
+            }, process.env.REFRESH_TOKEN_SECRET, {expiresIn: '5m'})
             res.status(202).cookie("refreshToken", refreshToken, {
                 httpOnly: true
             }).json({
